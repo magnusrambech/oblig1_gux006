@@ -69,7 +69,6 @@ public class ArrayDeque<E> implements DequeInterface<E> {
             size--;
             return objectToReturn;
         }
-        return null;
     }
 
     /**
@@ -96,9 +95,14 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public void addLast(E elem) throws DequeFullException {
-        size++;
-        lastIndex++;
-        theArray[lastIndex] = elem;
+        if(size == DEFAULT_CAPACITY) {
+            throw new DequeFullException("Deque is full!");
+        }
+        else {
+            size++;
+            lastIndex++;
+            theArray[lastIndex] = elem;
+        }
     }
 
     /**
@@ -110,10 +114,20 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E pullLast() throws DequeEmptyException {
-        return null;
+        if (size==0){
+            throw new DequeEmptyException("Deque is empty!");
+        }
+        else {
+            E objectToReturn = theArray[lastIndex];
+            theArray[lastIndex]=null;
+            lastIndex--;
+            size--;
+            return objectToReturn;
+        }
     }
 
     /**
+     *
      * Retunerer det siste elementet i samlingen, men
      * fjerner det ikke.
      *
@@ -122,7 +136,12 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E peekLast() throws DequeEmptyException {
-        return null;
+        if(size==0){
+            throw new DequeEmptyException("Deque is empty!");
+        }
+        else{
+            return theArray[lastIndex];
+        }
     }
 
     /**
@@ -152,6 +171,12 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public void clear() {
+        for (int i = firstIndex; i <= lastIndex; i++) {
+            theArray[i]=null;
+        }
+        size=0;
+        firstIndex=0;
+        lastIndex=0;
 
     }
 }
