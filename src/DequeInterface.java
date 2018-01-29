@@ -64,12 +64,15 @@ public interface DequeInterface<E> {
      * @return retunerer true hvis elementet er i samlingen.
      */
     boolean contains(Object elem);
+
     /**
      * Retunerer en tabell med alle elementene i samlingen.
-     * @param En tabell med samme type som T[].
+     * @param a En tabell med samme type som E[].
      * @return En tabell med alle elementene i samlingen.
      */
-    T[] toArray(T[] a);
+
+    E[] toArray(E[] a);
+
     /**
      * Fjerner alle elementene fra samlingen.
      */
