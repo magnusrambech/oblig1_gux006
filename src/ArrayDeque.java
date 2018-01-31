@@ -5,11 +5,14 @@ public class ArrayDeque<E> implements DequeInterface<E> {
     private int firstIndex;
     private int lastIndex;
     private boolean initialized;
-    private final int DEFAULT_CAPACITY = 10;
+    private final int DEFAULT_CAPACITY = 100;
 
 
-    public ArrayDeque(int size){
-        theArray= (E[])new Object[size];
+    public ArrayDeque(int arraySize){
+        if(arraySize>DEFAULT_CAPACITY){
+            arraySize=DEFAULT_CAPACITY;
+        }
+        theArray= (E[])new Object[arraySize];
         firstIndex=0;
         lastIndex=0;
         size=0;
@@ -39,6 +42,10 @@ public class ArrayDeque<E> implements DequeInterface<E> {
             if(size == DEFAULT_CAPACITY){
                 throw new DequeFullException("Full");
             }
+            if(firstIndex == lastIndex && size==0){
+                theArray[firstIndex] = elem;
+                size++;
+            }
             else {
                 theArray[lastIndex+1] = theArray[firstIndex];
                 theArray[firstIndex] = elem;
@@ -46,8 +53,6 @@ public class ArrayDeque<E> implements DequeInterface<E> {
                 lastIndex++;
             }
         }
-
-
     }
 
     /**
@@ -83,6 +88,7 @@ public class ArrayDeque<E> implements DequeInterface<E> {
         if(size==0){
             throw new DequeEmptyException("Deque is empty");
         }
+        System.out.println("Peeking at: " + theArray[firstIndex]);
         return theArray[firstIndex];
     }
 
@@ -163,7 +169,8 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E[] toArray(E[] a) {
-        return new E[0];
+        return (E[])new Object[size];
+        //(E[])new Object[arraySize];
     }
 
     /**
@@ -171,12 +178,44 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public void clear() {
-        for (int i = firstIndex; i <= lastIndex; i++) {
-            theArray[i]=null;
+        for (E elem : theArray){
+            elem = null;
         }
         size=0;
         firstIndex=0;
         lastIndex=0;
 
+    }
+
+    public void printDeque() throws DequeEmptyException{
+    if(size==0){
+        throw new DequeEmptyException("Empty!");
+    }
+    else {
+        for (int i = firstIndex; i <= lastIndex; i++) {
+            String printMessage = theArray[i].toString();
+            if (i == firstIndex) {
+                printMessage += " -frontIndex ";
+            }
+            if (i == lastIndex) {
+                printMessage += " -lastIndex ";
+            }
+            System.out.println(printMessage);
+        }
+    }
+    }
+
+
+    public static void main(String[] args) {
+        ArrayDeque test = new ArrayDeque(100);
+
+
+        test.addFirst(10);
+        test.addLast("SHWEIN");
+
+        test.pullFirst();
+        test.pullFirst();
+
+        test.clear();
     }
 }
