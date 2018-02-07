@@ -4,7 +4,7 @@ public class ArrayDeque<E> implements DequeInterface<E> {
     private int size;
     private int firstIndex;
     private int lastIndex;
-    private boolean initialized;
+    private int capacity;
     private final int DEFAULT_CAPACITY = 100;
 
 
@@ -12,11 +12,11 @@ public class ArrayDeque<E> implements DequeInterface<E> {
         if(arraySize>DEFAULT_CAPACITY){
             arraySize=DEFAULT_CAPACITY;
         }
-        theArray= (E[])new Object[arraySize];
-        firstIndex=0;
-        lastIndex=0;
-        size=0;
-        initialized = true;
+        this.theArray= (E[])new Object[arraySize];
+        this.firstIndex=1;
+        this.lastIndex=0;
+        this.size=0;
+        this.capacity = arraySize-1;
     }
 
     /**
@@ -29,6 +29,10 @@ public class ArrayDeque<E> implements DequeInterface<E> {
         return size;
     }
 
+    public boolean isEmpty(){
+        return this.size==0;
+    }
+
     /**
      * Legger til et element på begynnelsen av samlingen.
      *
@@ -38,11 +42,11 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public void addFirst(E elem) throws DequeFullException {
-        if(initialized){
-            if(size == DEFAULT_CAPACITY){
+
+            if(size == capacity){
                 throw new DequeFullException("Full");
             }
-            if(firstIndex == lastIndex && size==0){
+            if(firstIndex == lastIndex && isEmpty()){
                 theArray[firstIndex] = elem;
                 size++;
             }
@@ -52,7 +56,7 @@ public class ArrayDeque<E> implements DequeInterface<E> {
                 size++;
                 lastIndex++;
             }
-        }
+
     }
 
     /**
@@ -64,7 +68,7 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E pullFirst() throws DequeEmptyException {
-        if(size==0){
+        if(isEmpty()){
             throw new DequeEmptyException("Deque is empty!");
         }
         else {
