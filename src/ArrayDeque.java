@@ -46,16 +46,9 @@ public class ArrayDeque<E> implements DequeInterface<E> {
             if(size == capacity){
                 throw new DequeFullException("Full");
             }
-            if(firstIndex == lastIndex && isEmpty()){
-                theArray[firstIndex] = elem;
-                size++;
-            }
-            else {
-                theArray[lastIndex+1] = theArray[firstIndex];
-                theArray[firstIndex] = elem;
-                size++;
-                lastIndex++;
-            }
+           theArray[firstIndex]=elem;
+            firstIndex=(firstIndex+1)%capacity;
+            size++;
 
     }
 
@@ -109,9 +102,9 @@ public class ArrayDeque<E> implements DequeInterface<E> {
             throw new DequeFullException("Deque is full!");
         }
         else {
+            theArray[lastIndex]=elem;
+            lastIndex = (lastIndex-1)%capacity;
             size++;
-            lastIndex++;
-            theArray[lastIndex] = elem;
         }
     }
 
@@ -195,31 +188,26 @@ public class ArrayDeque<E> implements DequeInterface<E> {
     if(size==0){
         throw new DequeEmptyException("Empty!");
     }
-    else {
-        for (int i = firstIndex; i <= lastIndex; i++) {
-            String printMessage = theArray[i].toString();
-            if (i == firstIndex) {
-                printMessage += " -frontIndex ";
-            }
-            if (i == lastIndex) {
-                printMessage += " -lastIndex ";
-            }
-            System.out.println(printMessage);
+        for (int i = 0; i < theArray.length; i++) {
+            System.out.println(theArray[i]);
         }
     }
+    public int getLast(){
+        return lastIndex;
     }
 
-
     public static void main(String[] args) {
-        ArrayDeque test = new ArrayDeque(100);
+        ArrayDeque test = new ArrayDeque(10);
 
 
         test.addFirst(10);
+        test.addFirst(12);
+        test.addFirst(123);
         test.addLast("SHWEIN");
+        test.addFirst(13);
 
-        test.pullFirst();
-        test.pullFirst();
+        test.printDeque();
+        System.out.println(test.getLast());
 
-        test.clear();
     }
 }
