@@ -1,3 +1,5 @@
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
 public class ArrayDeque<E> implements DequeInterface<E> {
 
     private E[] theArray;
@@ -8,18 +10,19 @@ public class ArrayDeque<E> implements DequeInterface<E> {
     private final int DEFAULT_CAPACITY = 100;
 
 
-    public ArrayDeque(int arraySize){
-        if(arraySize>DEFAULT_CAPACITY){
-            arraySize=DEFAULT_CAPACITY;
+    public ArrayDeque(int arraySize) {
+        if (arraySize > DEFAULT_CAPACITY) {
+            arraySize = DEFAULT_CAPACITY;
         }
-        this.theArray= (E[])new Object[arraySize];
-        this.firstIndex=1;
-        this.lastIndex=0;
-        this.size=0;
-        this.capacity = arraySize-1;
+        this.theArray = (E[]) new Object[arraySize];
+        this.firstIndex = 0;
+        this.lastIndex = 0;
+        this.size = 0;
+        capacity = arraySize;
     }
 
     /**
+     * F
      * Retunerer hvor mange elementer samlingen inneholder.
      *
      * @return Størrelsen på samlingen.
@@ -29,8 +32,8 @@ public class ArrayDeque<E> implements DequeInterface<E> {
         return size;
     }
 
-    public boolean isEmpty(){
-        return this.size==0;
+    public boolean isEmpty() {
+        return this.size == 0;
     }
 
     /**
@@ -43,12 +46,36 @@ public class ArrayDeque<E> implements DequeInterface<E> {
     @Override
     public void addFirst(E elem) throws DequeFullException {
 
-            if(size == capacity){
-                throw new DequeFullException("Full");
-            }
-           theArray[firstIndex]=elem;
-            firstIndex=(firstIndex+1)%capacity;
+        if (size == capacity) {
+            throw new DequeFullException("Full");
+        }
+        if (isEmpty()) {
+            theArray[firstIndex] = elem;
+        } else {
+            firstIndex = (firstIndex - 1 + capacity) % capacity;
+            theArray[firstIndex] = elem;
+
+        }
+        size++;
+    }
+
+    /**
+     * Legger til et element på slutten av samlingen.
+     *
+     * @param elem Elementet som skal legges til.
+     * @throws DequeFullException når det ikke er plass til
+     *                            elementet.
+     */
+    @Override
+    public void addLast(E elem) throws DequeFullException {
+        if (size == capacity) {
+            throw new DequeFullException("Deque is full!");
+        } else {
+            lastIndex = (lastIndex + 1) % capacity;
+            theArray[lastIndex] = elem;
             size++;
+
+        }
 
     }
 
@@ -61,16 +88,17 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E pullFirst() throws DequeEmptyException {
-        if(isEmpty()){
+        E objectToReturn = null;
+        if (isEmpty()) {
             throw new DequeEmptyException("Deque is empty!");
-        }
-        else {
-            E objectToReturn = theArray[firstIndex];
+        } else {
+            objectToReturn = theArray[firstIndex];
             theArray[firstIndex] = null;
-            firstIndex++;
+            firstIndex = (firstIndex + 1) % capacity;
             size--;
-            return objectToReturn;
+
         }
+        return objectToReturn;
     }
 
     /**
@@ -82,31 +110,12 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E peekFirst() throws DequeEmptyException {
-        if(size==0){
+        if (size == 0) {
             throw new DequeEmptyException("Deque is empty");
         }
-        System.out.println("Peeking at: " + theArray[firstIndex]);
         return theArray[firstIndex];
     }
 
-    /**
-     * Legger til et element på slutten av samlingen.
-     *
-     * @param elem Elementet som skal legges til.
-     * @throws DequeFullException når det ikke er plass til
-     *                            elementet.
-     */
-    @Override
-    public void addLast(E elem) throws DequeFullException {
-        if(size == DEFAULT_CAPACITY) {
-            throw new DequeFullException("Deque is full!");
-        }
-        else {
-            theArray[lastIndex]=elem;
-            lastIndex = (lastIndex-1)%capacity;
-            size++;
-        }
-    }
 
     /**
      * Fjerner det siste elementet i samlingen og returnerer
@@ -117,20 +126,20 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E pullLast() throws DequeEmptyException {
-        if (size==0){
+        E objectToReturn = null;
+        if (isEmpty()) {
             throw new DequeEmptyException("Deque is empty!");
-        }
-        else {
-            E objectToReturn = theArray[lastIndex];
-            theArray[lastIndex]=null;
-            lastIndex--;
+        } else {
+            objectToReturn = theArray[lastIndex];
+            theArray[lastIndex] = null;
+            lastIndex = (lastIndex - 1 + capacity) % capacity;
             size--;
-            return objectToReturn;
+
         }
+        return objectToReturn;
     }
 
     /**
-     *
      * Retunerer det siste elementet i samlingen, men
      * fjerner det ikke.
      *
@@ -139,10 +148,9 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public E peekLast() throws DequeEmptyException {
-        if(size==0){
+        if (isEmpty()) {
             throw new DequeEmptyException("Deque is empty!");
-        }
-        else{
+        } else {
             return theArray[lastIndex];
         }
     }
@@ -155,19 +163,34 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public boolean contains(Object elem) {
+        for (E element : theArray) {
+            if (elem == element) {
+                return true;
+            } else if (elem.equals(element)) {
+                return true;
+            }
+        }
         return false;
     }
 
     /**
      * Retunerer en tabell med alle elementene i samlingen.
      *
-     * @param a En tabell med samme type som E[].
      * @return En tabell med alle elementene i samlingen.
      */
     @Override
-    public E[] toArray(E[] a) {
-        return (E[])new Object[size];
-        //(E[])new Object[arraySize];
+    public E[] toArray() {
+        E[] arrayToReturn = (E[]) new Object[size];
+        int index = 0;
+        int start = firstIndex;
+        for (int i = 0; i < theArray.length; i++) {
+            if (theArray[(i + start) % capacity] != null) {
+                arrayToReturn[index] = theArray[(i + start) % capacity];
+                index++;
+            }
+
+        }
+        return arrayToReturn;
     }
 
     /**
@@ -175,39 +198,29 @@ public class ArrayDeque<E> implements DequeInterface<E> {
      */
     @Override
     public void clear() {
-        for (E elem : theArray){
+        for (E elem : theArray) {
             elem = null;
         }
-        size=0;
-        firstIndex=0;
-        lastIndex=0;
+        size = 0;
+        firstIndex = 0;
+        lastIndex = 0;
 
     }
 
-    public void printDeque() throws DequeEmptyException{
-    if(size==0){
-        throw new DequeEmptyException("Empty!");
-    }
+    public void printDeque() throws DequeEmptyException {
+        if (size == 0) {
+            throw new DequeEmptyException("Empty!");
+        }
         for (int i = 0; i < theArray.length; i++) {
-            System.out.println(theArray[i]);
+            System.out.println(i + ": " + theArray[i]);
         }
     }
-    public int getLast(){
-        return lastIndex;
+
+    public void printCircular() {
+        int start = firstIndex;
+        for (int i = 0; i < theArray.length; i++) {
+            System.out.println(theArray[(i + start) % capacity]);
+        }
     }
 
-    public static void main(String[] args) {
-        ArrayDeque test = new ArrayDeque(10);
-
-
-        test.addFirst(10);
-        test.addFirst(12);
-        test.addFirst(123);
-        test.addLast("SHWEIN");
-        test.addFirst(13);
-
-        test.printDeque();
-        System.out.println(test.getLast());
-
-    }
 }
